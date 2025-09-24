@@ -10,26 +10,29 @@ number_to_letter = {
     value: key for key, value in letter_to_number.items()
 }
 
-def decrypt(message: str, key: str) -> str:
+def otp_decrypt(message: str, key: str, verbose: bool = False) -> str:
     key_encoded = ""
     for char in key:
         key_encoded += letter_to_number[char.upper()]
 
-    print(f"{key_encoded       = !r}")
-    print(f"{message           = !r}")
+    if verbose:
+        print(f"{key_encoded       = !r}")
+        print(f"{message           = !r}")
 
     key_repeat_times = math.ceil(len(message) / len(key_encoded))
     if key_repeat_times > 1:
         key_encoded = key_encoded * key_repeat_times
 
-    print(f"{key_encoded       = !r}")
+    if verbose:
+        print(f"{key_encoded       = !r}")
 
     plaintext_encoded = ""
     for cipher_num, key_num in zip(message, key_encoded):
         plain = (int(cipher_num) - int(key_num)) % 10
         plaintext_encoded += str(plain)
 
-    print(f"{plaintext_encoded = !r}")
+    if verbose:
+        print(f"{plaintext_encoded = !r}")
 
     plaintext = ""
     while plaintext_encoded:
@@ -41,12 +44,13 @@ def decrypt(message: str, key: str) -> str:
             plaintext += number_to_letter[plaintext_encoded[:2]]
             plaintext_encoded = plaintext_encoded[2:]
 
-    print(f"{plaintext         = !r}")
+    if verbose:
+        print(f"{plaintext         = !r}")
 
     return plaintext
 
 
-def encrypt(message: str, key: str) -> str:
+def otp_encrypt(message: str, key: str, verbose: bool = False) -> str:
     message_encoded = ""
     for char in message:
         message_encoded += letter_to_number[char.upper()]
@@ -55,28 +59,31 @@ def encrypt(message: str, key: str) -> str:
     for char in key:
         key_encoded += letter_to_number[char.upper()]
 
-    print(f"{key_encoded        = !r}")
-    print(f"{message_encoded    = !r}")
+    if verbose:
+        print(f"{key_encoded        = !r}")
+        print(f"{message_encoded    = !r}")
 
     key_repeat_times = math.ceil(len(message_encoded) / len(key_encoded))
     if key_repeat_times > 1:
         key_encoded = key_encoded * key_repeat_times
 
-    print(f"{key_encoded        = !r}")
+    if verbose:
+        print(f"{key_encoded        = !r}")
 
     ciphertext_encoded = ""
     for plain_num, key_num in zip(message_encoded, key_encoded):
         plain = (int(plain_num) + int(key_num)) % 10
         ciphertext_encoded += str(plain)
 
-    print(f"{ciphertext_encoded = !r}")
+    if verbose:
+        print(f"{ciphertext_encoded = !r}")
 
     return ciphertext_encoded
 
 
 def main() -> None:
     for message, key in [
-        ("87279561301778659553288989517", "ліс"),  # <------ wtf
+        ("87279561301778659553288989517", "ліс"),
         ("416117613875320917532542166181", "сол"),
         ("2330993010441478992202587248", "три"),
         ("79507826026767241881559646721719", "два"),
@@ -88,16 +95,16 @@ def main() -> None:
         ("79168822636723341442555256787819", "дев"),
     ]:
         try:
-            plaintext = decrypt(message, key.upper())
+            plaintext = otp_decrypt(message, key.upper(), True)
         except Exception as e:
             print(f"Failed to decrypt message: {e.__class__.__name__}: {e}")
         else:
-            print("-" * 32)
-            ciphertext = encrypt(plaintext, key.upper())
+            print("-" * 64)
+            ciphertext = otp_encrypt(plaintext, key.upper(), True)
 
             print(f"Original message and encrypted ciphertext match: {message == ciphertext}")
 
-        print("="*32)
+        print("=" * 64)
 
 
 if __name__ == "__main__":
