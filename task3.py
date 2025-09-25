@@ -1,3 +1,7 @@
+VERBOSE_AF = True
+VERBOSE_ONELINE = True
+
+
 def main() -> None:
     alphabet = "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ"
 
@@ -5,9 +9,13 @@ def main() -> None:
     key = "спрощ"
     result = ""
 
+    printed_char_desc = False
+
     key_index = 0
     for char in text:
         if char.upper() not in alphabet:
+            if VERBOSE_AF:
+                print(f"\"{char}\" - ігнорується.", end=" " if VERBOSE_ONELINE else "\n")
             result += char
             continue
 
@@ -17,9 +25,26 @@ def main() -> None:
         char_index = alphabet.index(char.upper())
         key_char_index = alphabet.index(key_char.upper())
 
+        if VERBOSE_AF:
+            char_desc = "Т" if printed_char_desc else "Буква тексту (далі Т)"
+            key_desc = "К" if printed_char_desc else "Буква ключа (далі К)"
+            print(f"{char_desc} \"{char}\" = {char_index}.", end=" " if VERBOSE_ONELINE else "\n")
+            print(f"{key_desc} \"{key_char}\" = {key_char_index}.", end=" " if VERBOSE_ONELINE else "\n")
+            printed_char_desc = True
+
         decrypted_idx = (char_index - key_char_index) % len(alphabet)
+        if VERBOSE_AF:
+            print(f"{char_index} - {key_char_index} = {decrypted_idx}.", end=" " if VERBOSE_ONELINE else "\n")
+
         decrypted_char = alphabet[decrypted_idx]
-        result += decrypted_char.lower() if not char.isupper() else decrypted_char
+        decrypted_char = decrypted_char.lower() if not char.isupper() else decrypted_char
+        if VERBOSE_AF:
+            print(f"{decrypted_idx} = \"{decrypted_char}\".", end=" " if VERBOSE_ONELINE else "\n")
+
+        result += decrypted_char
+
+    if VERBOSE_AF and VERBOSE_ONELINE:
+        print()
 
     print(text)
     print(result)
