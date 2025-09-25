@@ -5,7 +5,7 @@ def main() -> None:
     message = input("Message: ")
     key = input("Key: ")
 
-    ciphertext = otp_encrypt(message, key)
+    ciphertext = otp_encrypt(message, key, True)
     print(f"Ciphertext: {ciphertext!r}")
 
 

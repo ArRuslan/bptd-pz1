@@ -5,7 +5,7 @@ def main() -> None:
     message = input("Message: ")
     key = input("Key: ")
 
-    ciphertext = otp_decrypt(message, key)
+    ciphertext = otp_decrypt(message, key, True)
     print(f"Plaintext: {ciphertext!r}")
 
 
