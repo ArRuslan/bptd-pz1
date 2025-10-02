@@ -4,16 +4,43 @@ letter_to_number = {
     "А": "1", "И": "2", "Т": "3", "Е": "4", "С": "5", "Н": "6", "О": "7",
     "Б": "81", "В": "82", "Г": "83", "Ґ": "84", "Д": "85", "Є": "86", "Ж": "87", "З": "88", "І": "89", "Ї": "80",
     "Й": "91", "К": "92", "Л": "93", "М": "94", "П": "95", "Р": "96", "У": "97", "Ф": "98", "Х": "99", "Ц": "90",
-    "Ч": "01", "Ш": "02", "Щ": "03", "Ь": "04", "Ю": "05", "Я": "06", " ": "07",
+    "Ч": "01", "Ш": "02", "Щ": "03", "Ь": "04", "Ю": "05", "Я": "06", " ": "07", "?8": "08", "?9": "09", "?0": "00",
 }
 number_to_letter = {
     value: key for key, value in letter_to_number.items()
 }
 
+
+def encode(plain: str, leave_numbers_as_is: bool = False, ignore_unknown: bool = False) -> str:
+    encoded = ""
+    for char in plain:
+        if char in "0123456789" and leave_numbers_as_is:
+            encoded += char
+            continue
+        char = char.upper()
+        if char not in letter_to_number and ignore_unknown:
+            continue
+        encoded += letter_to_number[char]
+
+    return encoded
+
+
+def decode(encoded: str) -> str:
+    message = ""
+    while encoded:
+        num = int(encoded[0])
+        if 1 <= num <= 7:
+            message += number_to_letter[encoded[0]]
+            encoded = encoded[1:]
+        else:
+            message += number_to_letter[encoded[:2]]
+            encoded = encoded[2:]
+
+    return message
+
+
 def otp_decrypt(message: str, key: str, verbose: bool = False) -> str:
-    key_encoded = ""
-    for char in key:
-        key_encoded += letter_to_number[char.upper()]
+    key_encoded = encode(key, True, True)
 
     if verbose:
         print(f"{key_encoded       = !r}")
@@ -34,15 +61,7 @@ def otp_decrypt(message: str, key: str, verbose: bool = False) -> str:
     if verbose:
         print(f"{plaintext_encoded = !r}")
 
-    plaintext = ""
-    while plaintext_encoded:
-        num = int(plaintext_encoded[0])
-        if 1 <= num <= 7:
-            plaintext += number_to_letter[plaintext_encoded[0]]
-            plaintext_encoded = plaintext_encoded[1:]
-        else:
-            plaintext += number_to_letter[plaintext_encoded[:2]]
-            plaintext_encoded = plaintext_encoded[2:]
+    plaintext = decode(plaintext_encoded)
 
     if verbose:
         print(f"{plaintext         = !r}")
@@ -51,13 +70,8 @@ def otp_decrypt(message: str, key: str, verbose: bool = False) -> str:
 
 
 def otp_encrypt(message: str, key: str, verbose: bool = False) -> str:
-    message_encoded = ""
-    for char in message:
-        message_encoded += letter_to_number[char.upper()]
-
-    key_encoded = ""
-    for char in key:
-        key_encoded += letter_to_number[char.upper()]
+    message_encoded = encode(message)
+    key_encoded = encode(key, True, True)
 
     if verbose:
         print(f"{key_encoded        = !r}")
